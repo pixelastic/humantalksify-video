@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+require 'tmpdir'
+require 'tempfile'
+require 'awesome_print'
+
+# Convert a video into one ready to be uploaded on the HumanTalks channel
+class HumantalksifyVideo
+  def initialize(*args)
+    @input = args[0]
+    @output = args[1]
+
+    if @input.empty? || @output.nil?
+      puts "Usage:"
+      puts "$ humantalksify-video input.mp4 output.mp4"
+      exit 1
+    end
+  end
+
+  # Returns the path of the directory holding the source files
+  def source_dir
+    here = File.expand_path(__FILE__)
+    here = File.readlink(here) if File.symlink?(here)
+
+    directory = File.dirname(here)
+    File.join(directory, 'sources')
+  end
+
+  # Merge prefix, video and suffix
+  def add_before_and_after(input, output)
+    prefix = File.join(source_dir, 'start.mp4')
+    suffix = File.join(source_dir, 'end.mp4')
+
+    filter = '"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]"'
+
+    options = [
+      "-i #{prefix.shellescape}",
+      "-i #{input.shellescape}",
+      "-i #{suffix.shellescape}",
+      "-filter_complex #{filter}",
+      '-map "[v]"',
+      '-map "[a]"',
+      output.shellescape
+    ]
+
+    command = "ffmpeg #{options.join(' ')}"
+    `#{command}`
+  end
+
+  def run
+    add_before_and_after(@input, @output)
+  end
+end
+HumantalksifyVideo.new(*ARGV).run
