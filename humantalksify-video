@@ -9,11 +9,11 @@ class HumantalksifyVideo
     @input = args[0]
     @output = args[1]
 
-    if @input.empty? || @output.nil?
-      puts "Usage:"
-      puts "$ humantalksify-video input.mp4 output.mp4"
-      exit 1
-    end
+    return unless @input.nil? || @output.nil?
+
+    puts 'Usage:'
+    puts '$ humantalksify-video input.mp4 output.mp4'
+    exit 1
   end
 
   # Returns the path of the directory holding the source files
