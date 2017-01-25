@@ -6,6 +6,11 @@ to Youtube and shared
 ## Usage
 
 ```
-$ humantalskify-video input.mp4 '00:01:14-00:11:15'
+$ humantalskify-video input.mp4 output.mp4
 ```
+
+## TODO
+
+I'm splitting the video with another script before running it to this
+one, I should merge the two.
 
